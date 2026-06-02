@@ -10,6 +10,10 @@ export interface LinkedInProfile {
   accessToken?: string;
   tokenExpiresAt?: Date;
 
+  postingAccessToken?: string;
+  postingTokenExpiresAt?: Date;
+  postingScopes?: string[];
+
   firstName?: string;
   lastName?: string;
   headline?: string;
@@ -32,6 +36,8 @@ export interface User {
   credits: number;
 
   linkedin: LinkedInProfile;
+
+  linkedinPostingEnabled?: boolean;
 
   notifications: NotificationSettings;
 

@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 
+import { logout } from "@/actions/auth/login";
+
 const navItems = [
   {
     label: "Dashboard",
@@ -32,11 +34,6 @@ const footerItems = [
     label: "Support",
     href: "/dash/support",
     icon: HelpIcon,
-  },
-  {
-    label: "Logout",
-    href: "/auth",
-    icon: LogoutIcon,
   },
 ];
 
@@ -144,6 +141,14 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
               onNavigate={onNavigate}
             />
           ))}
+          <button
+            className="group flex w-full items-center gap-3 rounded-lg px-3 py-2.5 font-label-md text-label-md text-on-surface-variant transition-all duration-200 hover:-translate-y-px hover:bg-surface-container-low hover:text-primary"
+            onClick={() => { onNavigate?.(); logout(); }}
+            type="button"
+          >
+            <LogoutIcon className="h-5 w-5 transition-transform duration-200 group-hover:scale-110" />
+            <span>Logout</span>
+          </button>
         </div>
       </div>
     </div>

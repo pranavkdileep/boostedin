@@ -15,6 +15,8 @@ const LINKEDIN_SCOPES = "openid profile email";
 
 const SESSION_COOKIE = "session";
 const STATE_COOKIE = "linkedin_oauth_state";
+const OAUTH_INTENT_COOKIE = "linkedin_oauth_intent";
+const OAUTH_USER_COOKIE = "linkedin_oauth_user_id";
 const SESSION_MAX_AGE_SECONDS = 7 * 24 * 60 * 60;
 const STATE_MAX_AGE_SECONDS = 10 * 60;
 
@@ -97,15 +99,19 @@ interface LinkedInUserInfo {
 export async function handleLinkedInCallback(
   code: string,
   state: string
-): Promise<{ user: User; token: string }> {
+): Promise<{ user: User; token: string; redirectPath: string }> {
   const cookieStore = await cookies();
   const stateCookie = cookieStore.get(STATE_COOKIE);
+  const oauthIntent = cookieStore.get(OAUTH_INTENT_COOKIE)?.value;
+  const oauthUserId = cookieStore.get(OAUTH_USER_COOKIE)?.value;
 
   if (!stateCookie || stateCookie.value !== state) {
     throw new Error("Invalid OAuth state");
   }
 
   cookieStore.delete(STATE_COOKIE);
+  cookieStore.delete(OAUTH_INTENT_COOKIE);
+  cookieStore.delete(OAUTH_USER_COOKIE);
 
   const { clientId, clientSecret } = getLinkedInCredentials();
   const baseUrl = await getBaseUrl();
@@ -130,6 +136,17 @@ export async function handleLinkedInCallback(
 
   const tokenData = (await tokenResponse.json()) as LinkedInTokenResponse;
   const accessToken = tokenData.access_token;
+  const tokenScopes = tokenData.scope.split(/[\s,]+/).filter(Boolean);
+  const linkedinPostingEnabled = tokenScopes.includes("w_member_social");
+
+  if (oauthIntent === "linkedin_posting" && !linkedinPostingEnabled) {
+    throw new Error(
+      `LinkedIn did not grant posting access. Granted scopes: ${
+        tokenScopes.join(", ") || "none"
+      }.`
+    );
+  }
+
   const tokenExpiresAt = new Date(
     Date.now() + tokenData.expires_in * 1000
   );
@@ -149,25 +166,47 @@ export async function handleLinkedInCallback(
   const usersCollection = db.collection<User>(USERS_COLLECTION);
   const now = new Date();
 
-  const existingUser = await usersCollection.findOne({
-    email: userInfo.email,
-  });
+  const existingUser = await usersCollection.findOne(
+    oauthIntent === "linkedin_posting" && oauthUserId
+      ? { _id: oauthUserId }
+      : { email: userInfo.email }
+  );
+
+  if (oauthIntent === "linkedin_posting" && !existingUser) {
+    throw new Error("LinkedIn posting auth user not found");
+  }
 
   let user: User;
 
   if (existingUser) {
+    const linkedinUpdates: Record<string, unknown> = {
+      "linkedin.linkedinId": userInfo.sub,
+      "linkedin.firstName": userInfo.given_name,
+      "linkedin.lastName": userInfo.family_name,
+      "linkedin.profilePictureUrl": userInfo.picture,
+      "linkedin.isConnected": true,
+    };
+
+    if (oauthIntent === "linkedin_posting") {
+      linkedinUpdates["linkedin.postingAccessToken"] = encryptedAccessToken;
+      linkedinUpdates["linkedin.postingTokenExpiresAt"] = tokenExpiresAt;
+      linkedinUpdates["linkedin.postingScopes"] = tokenScopes;
+    } else {
+      linkedinUpdates["linkedin.accessToken"] = encryptedAccessToken;
+      linkedinUpdates["linkedin.tokenExpiresAt"] = tokenExpiresAt;
+    }
+
     const updated = await usersCollection.findOneAndUpdate(
-      { email: userInfo.email },
+      oauthIntent === "linkedin_posting" && oauthUserId
+        ? { _id: oauthUserId }
+        : { email: userInfo.email },
       {
         $set: {
           name: userInfo.name,
           profilePictureUrl: userInfo.picture,
-          "linkedin.accessToken": encryptedAccessToken,
-          "linkedin.tokenExpiresAt": tokenExpiresAt,
-          "linkedin.firstName": userInfo.given_name,
-          "linkedin.lastName": userInfo.family_name,
-          "linkedin.profilePictureUrl": userInfo.picture,
-          "linkedin.isConnected": true,
+          ...linkedinUpdates,
+          linkedinPostingEnabled:
+            linkedinPostingEnabled || existingUser.linkedinPostingEnabled || false,
           lastLoginAt: now,
           updatedAt: now,
         },
@@ -185,13 +224,22 @@ export async function handleLinkedInCallback(
       credits: 0,
       linkedin: {
         linkedinId: userInfo.sub,
-        accessToken: encryptedAccessToken,
-        tokenExpiresAt,
         firstName: userInfo.given_name,
         lastName: userInfo.family_name,
         profilePictureUrl: userInfo.picture,
         isConnected: true,
+        ...(linkedinPostingEnabled
+          ? {
+              postingAccessToken: encryptedAccessToken,
+              postingTokenExpiresAt: tokenExpiresAt,
+              postingScopes: tokenScopes,
+            }
+          : {
+              accessToken: encryptedAccessToken,
+              tokenExpiresAt,
+            }),
       },
+      linkedinPostingEnabled,
       notifications: {
         newPostScheduled: true,
         weeklyReport: true,
@@ -225,7 +273,12 @@ export async function handleLinkedInCallback(
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
 
-  return { user, token };
+  return {
+    user,
+    token,
+    redirectPath:
+      oauthIntent === "linkedin_posting" ? "/dash/settings" : "/dash",
+  };
 }
 
 export async function verifyUser(cookieValue: string): Promise<User | null> {
@@ -243,4 +296,16 @@ export async function verifyUser(cookieValue: string): Promise<User | null> {
   } catch {
     return null;
   }
+}
+
+export async function logout() {
+  "use server";
+
+  const cookieStore = await cookies();
+  cookieStore.delete(SESSION_COOKIE);
+  cookieStore.delete(STATE_COOKIE);
+  cookieStore.delete(OAUTH_INTENT_COOKIE);
+  cookieStore.delete(OAUTH_USER_COOKIE);
+
+  redirect("/auth");
 }
