@@ -1,4 +1,5 @@
 import DashboardShell from "@/components/dashboard/DashboardShell";
+import PostGenerator from "@/components/dashboard/PostGenerator";
 
 export default function DashPage() {
   return (
@@ -25,40 +26,7 @@ export default function DashPage() {
 
         <div className="grid grid-cols-1 gap-md lg:grid-cols-3">
           <div className="space-y-md lg:col-span-2">
-            <section className="relative overflow-hidden rounded-[24px] border border-outline-variant/10 bg-surface-container-lowest p-md shadow-[0_4px_20px_rgba(10,102,194,0.05)]">
-              <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-primary-container/20 blur-3xl" />
-              <div className="relative z-10">
-                <div className="mb-6 flex items-center gap-2">
-                  <SparkleIcon className="h-6 w-6 text-secondary" />
-                  <h2 className="font-headline-md text-headline-md text-on-background">
-                    AI Generator
-                  </h2>
-                </div>
-
-                <textarea
-                  className="mb-4 h-32 w-full resize-none rounded-xl border border-outline-variant/30 bg-surface p-4 font-body-lg text-body-lg text-on-surface outline-none transition-all placeholder:text-on-surface-variant/70 focus:border-primary focus:ring-2 focus:ring-primary/20"
-                  placeholder="What would you like to write about today? e.g., The future of SaaS pricing models..."
-                />
-
-                <div className="mb-6 flex flex-wrap gap-3">
-                  <button className="flex items-center gap-2 rounded-lg bg-surface-container px-3 py-1.5 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container-high" type="button">
-                    <ImageIcon className="h-4 w-4" />
-                    Upload Cover Image
-                  </button>
-                </div>
-
-                <div className="mb-6 flex flex-wrap gap-3">
-                  <SelectPill label="Type: LinkedIn Post" />
-                  <SelectPill label="Tone: Professional" />
-                  <SelectPill label="Length: Standard (150 words)" />
-                </div>
-
-                <button className="bg-purple-gradient flex min-h-12 w-full items-center justify-center gap-2 rounded-xl py-4 font-label-md text-label-md font-bold text-white shadow-[0_12px_28px_rgba(113,42,226,0.22)] transition-all hover:-translate-y-0.5 hover:shadow-[0_16px_34px_rgba(113,42,226,0.3)]" type="button">
-                  <MagicIcon className="h-5 w-5" />
-                  Generate Content
-                </button>
-              </div>
-            </section>
+            <PostGenerator />
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <PerformanceCard label="Followers Growth" value="+187" color="primary" path="M0,30 L20,20 L40,25 L60,10 L80,15 L100,5" />
@@ -143,14 +111,6 @@ function MiniMetric({ label, value }: { label: string; value: string }) {
   );
 }
 
-function SelectPill({ label }: { label: string }) {
-  return (
-    <select className="rounded-lg border border-outline-variant/30 bg-surface px-4 py-2 font-label-md text-label-md text-on-surface-variant outline-none transition-colors focus:border-primary">
-      <option>{label}</option>
-    </select>
-  );
-}
-
 function PerformanceCard({
   color,
   label,
@@ -220,37 +180,18 @@ type IconProps = {
 
 function IconBase({ children, className }: IconProps & { children: React.ReactNode }) {
   return (
-    <svg aria-hidden="true" className={className} fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} viewBox="0 0 24 24">
+    <svg
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      viewBox="0 0 24 24"
+    >
       {children}
     </svg>
-  );
-}
-
-function SparkleIcon(props: IconProps) {
-  return (
-    <IconBase {...props}>
-      <path d="M9.81 15.9 9 18.75l-.81-2.85a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.85-.81a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.81 2.85a4.5 4.5 0 0 0 3.09 3.09l2.85.81-2.85.81a4.5 4.5 0 0 0-3.09 3.09Z" />
-    </IconBase>
-  );
-}
-
-function ImageIcon(props: IconProps) {
-  return (
-    <IconBase {...props}>
-      <path d="M4.5 5.25h15A1.5 1.5 0 0 1 21 6.75v10.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 17.25V6.75a1.5 1.5 0 0 1 1.5-1.5Z" />
-      <path d="m3 15 4.5-4.5 3 3 2.25-2.25L21 19" />
-      <path d="M15.75 8.25h.01" />
-    </IconBase>
-  );
-}
-
-function MagicIcon(props: IconProps) {
-  return (
-    <IconBase {...props}>
-      <path d="m14.25 5.25 4.5 4.5-9 9-4.5-4.5 9-9Z" />
-      <path d="m12.75 6.75 4.5 4.5" />
-      <path d="M5.25 3.75v3M3.75 5.25h3M19.5 16.5v3M18 18h3" />
-    </IconBase>
   );
 }
 
