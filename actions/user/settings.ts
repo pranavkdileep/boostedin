@@ -44,10 +44,22 @@ export async function getUserSettings(): Promise<UserSettings | null> {
     email: user.email,
     bio: user.bio,
     credits: user.credits,
-    linkedinPostingEnabled: user.linkedinPostingEnabled ?? false,
+    linkedinPostingEnabled: hasValidPostingToken(user),
     linkedin: user.linkedin,
     notifications: user.notifications,
   };
+}
+
+function hasValidPostingToken(user: User): boolean {
+  if (!user.linkedinPostingEnabled || !user.linkedin.postingAccessToken) {
+    return false;
+  }
+
+  if (!user.linkedin.postingTokenExpiresAt) {
+    return true;
+  }
+
+  return new Date(user.linkedin.postingTokenExpiresAt).getTime() > Date.now();
 }
 
 function isValidEmail(email: string): boolean {

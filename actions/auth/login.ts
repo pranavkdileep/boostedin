@@ -96,6 +96,18 @@ interface LinkedInUserInfo {
   locale?: string;
 }
 
+function hasValidPostingToken(user: User): boolean {
+  if (!user.linkedinPostingEnabled || !user.linkedin.postingAccessToken) {
+    return false;
+  }
+
+  if (!user.linkedin.postingTokenExpiresAt) {
+    return true;
+  }
+
+  return new Date(user.linkedin.postingTokenExpiresAt).getTime() > Date.now();
+}
+
 export async function handleLinkedInCallback(
   code: string,
   state: string
@@ -179,6 +191,7 @@ export async function handleLinkedInCallback(
   let user: User;
 
   if (existingUser) {
+    const existingPostingEnabled = hasValidPostingToken(existingUser);
     const linkedinUpdates: Record<string, unknown> = {
       "linkedin.linkedinId": userInfo.sub,
       "linkedin.firstName": userInfo.given_name,
@@ -206,7 +219,7 @@ export async function handleLinkedInCallback(
           profilePictureUrl: userInfo.picture,
           ...linkedinUpdates,
           linkedinPostingEnabled:
-            linkedinPostingEnabled || existingUser.linkedinPostingEnabled || false,
+            linkedinPostingEnabled || existingPostingEnabled,
           lastLoginAt: now,
           updatedAt: now,
         },
@@ -246,7 +259,7 @@ export async function handleLinkedInCallback(
         creditAlert: true,
       },
       isEmailVerified: userInfo.email_verified ?? false,
-      totalCreditsPurchased: 0,
+      totalCreditsPurchased: 10,
       totalCreditsUsed: 0,
       postsGenerated: 0,
       articlesGenerated: 0,
