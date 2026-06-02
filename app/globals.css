@@ -187,6 +187,91 @@
   }
 }
 
+@keyframes slide-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes gradient-rotate {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.6;
+  }
+  70% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+}
+
 @layer utilities {
   .animate-blob {
     animation: blob 7s infinite;
@@ -200,11 +285,33 @@
   .animate-fade-in {
     animation: fade-in 0.6s ease-out forwards;
   }
+  .animate-fade-in-down {
+    animation: fade-in-down 0.4s ease-out;
+  }
+  .animate-fade-in-left {
+    animation: fade-in-left 0.5s ease-out forwards;
+  }
   .animate-slide-in-left {
     animation: slide-in-left 0.6s ease-out forwards;
   }
   .animate-slide-in-right {
     animation: slide-in-right 0.6s ease-out forwards;
+  }
+  .animate-slide-in-up {
+    animation: slide-in-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .animate-shake {
+    animation: shake 0.45s ease-in-out;
+  }
+  .animate-spin {
+    animation: spin 0.8s linear infinite;
+  }
+  .animate-gradient-rotate {
+    background-size: 200% 200%;
+    animation: gradient-rotate 6s ease infinite;
+  }
+  .animate-pulse-ring {
+    animation: pulse-ring 2s ease-out infinite;
   }
   .animation-delay-200 {
     animation-delay: 200ms;
@@ -223,6 +330,12 @@
   }
   .animation-delay-2000 {
     animation-delay: 2000ms;
+  }
+  .animation-delay-3000 {
+    animation-delay: 3000ms;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4000ms;
   }
   .glass {
     background: rgba(255, 255, 255, 0.8);

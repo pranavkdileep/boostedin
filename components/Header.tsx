@@ -6,7 +6,6 @@ import Link from "next/link";
 const navLinks = [
   { label: "Features", href: "#features" },
   { label: "Pricing", href: "#pricing" },
-  { label: "Templates", href: "#templates" },
   { label: "Blog", href: "#blog" },
 ];
 
@@ -61,10 +60,18 @@ export default function Header() {
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
-          <button className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer">
+          <button className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200 cursor-pointer"
+          
+          onClick={()=>{
+            window.location.href = "/auth";
+          }}
+          >
             Sign In
           </button>
-          <button className="bg-primary-container text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary transition-colors duration-200 flex items-center gap-2 group cursor-pointer">
+          <button className="bg-primary-container text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary transition-colors duration-200 flex items-center gap-2 group cursor-pointer"
+          onClick={()=>{            window.location.href = "/auth";
+          }}
+          >
             Get Started
             <svg
               className="w-[18px] h-[18px] group-hover:translate-x-1 transition-transform"
@@ -136,10 +143,16 @@ export default function Header() {
             ))}
           </div>
           <div className="mt-4 pt-4 border-t border-surface-container-high flex flex-col gap-3">
-            <button className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200 text-left cursor-pointer">
+            <button className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors duration-200 text-left cursor-pointer"
+            onClick={()=>{              window.location.href = "/auth";
+            }}
+            >
               Sign In
             </button>
-            <button className="bg-primary-container text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary transition-colors duration-200 flex items-center gap-2 w-fit cursor-pointer">
+            <button className="bg-primary-container text-on-primary px-6 py-2.5 rounded-lg font-label-md text-label-md hover:bg-primary transition-colors duration-200 flex items-center gap-2 w-fit cursor-pointer"
+            onClick={()=>{            window.location.href = "/auth";
+            }}
+            >
               Get Started
               <svg
                 className="w-[18px] h-[18px]"
