@@ -1,9 +1,5 @@
-import React from 'react'
+import DashboardShell from "@/components/dashboard/DashboardShell";
 
-function page() {
-  return (
-    <div>page</div>
-  )
+export default function DashPage() {
+  return <DashboardShell title="Dashboard" />;
 }
-
-export default page
