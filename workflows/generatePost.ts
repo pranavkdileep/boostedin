@@ -11,8 +11,16 @@ export async function generatePostWorkflow(postData: Post) {
 
   const postId = await createPost(postData);
   await updatePostStatus(postId, "processing");
-  const result = await callLLMGenerate(postData);
-  await savePostResult(postId, result);
+
+  try {
+    const result = await callLLMGenerate(postData);
+    await savePostResult(postId, result);
+  } catch (err) {
+    await savePostError(
+      postId,
+      err instanceof Error ? err.message : "Generation failed"
+    );
+  }
 
   return { postId };
 }
@@ -66,6 +74,27 @@ async function callLLMGenerate(post: Post): Promise<LLMResult> {
   }
 
   return { title: result.title, postBody: result.postBody };
+}
+
+async function savePostError(
+  postId: string,
+  error: string
+): Promise<void> {
+  "use step";
+
+  const postsCollection = db.collection<Post>(POSTS_COLLECTION);
+  const now = new Date();
+
+  await postsCollection.updateOne(
+    { _id: postId },
+    {
+      $set: {
+        status: "failed" as Post["status"],
+        linkedinPublishError: error,
+        updatedAt: now,
+      },
+    }
+  );
 }
 
 async function savePostResult(postId: string, result: LLMResult): Promise<void> {

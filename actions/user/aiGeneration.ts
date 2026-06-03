@@ -70,6 +70,32 @@ export async function startGeneration(
   return { postId: post._id };
 }
 
+export async function startPublish(
+  postId: string
+): Promise<{ postId: string }> {
+  const userId = await getAuthenticatedUserId();
+
+  const postsCollection = db.collection<Post>(POSTS_COLLECTION);
+  const post = await postsCollection.findOne({ _id: postId, userId });
+
+  if (!post) {
+    throw new Error("Post not found");
+  }
+
+  if (post.status !== "draft") {
+    throw new Error(
+      `Cannot publish a post with status "${post.status}". Only "draft" posts can be published.`
+    );
+  }
+
+  const { publishPostWorkflow } = await import("@/workflows/publishPost");
+  const { start } = await import("workflow/api");
+
+  await start(publishPostWorkflow, [postId]);
+
+  return { postId };
+}
+
 export interface PostStatusResult {
   _id: string;
   status: PostStatus;

@@ -43,15 +43,10 @@ Requirements:
 - Do not use em dashes or the character "\u2014".
 - Use normal readable headings only when useful.
 - Use bullet points with this symbol: \u2022
-- Choose the best writing perspective for the content.
-- Use third-person/report-style writing when it fits the content.
-- If first-person or direct storytelling would make the post more natural, use that instead.
+- Use third-person/report-style writing.
 - Make the post professional, natural, and engaging for LinkedIn.
 - Start with a strong hook in the first 1 to 2 lines.
-- Keep paragraphs short.
-- Add practical value, lessons learned, or takeaways.
 - Avoid making the first visible preview too long before the main value.
-- End with a short call-to-action question.
 - Add 8 to 12 relevant hashtags at the bottom of the "post" value.
 - Put hashtags on the final lines only.
 - Do not include explanations about the formatting.

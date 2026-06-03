@@ -5,12 +5,13 @@ import Image from "next/image";
 import { uploadImage } from "@/actions/user/uploadImage";
 import {
   startGeneration,
+  startPublish,
   getGenerationStatus,
   getGeneratedContent,
   updatePost,
 } from "@/actions/user/aiGeneration";
 
-type Phase = "idle" | "generating" | "draft" | "error";
+type Phase = "idle" | "generating" | "draft" | "error" | "publishing";
 
 export default function PostGenerator() {
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -115,6 +116,48 @@ export default function PostGenerator() {
     }
   }, [postId, title, postBody, hashtags]);
 
+  const handlePublish = useCallback(async () => {
+    if (!postId) return;
+    setPhase("publishing");
+    setStatusText("Starting publish…");
+    setErrorMessage("");
+
+    try {
+      await startPublish(postId);
+
+      const poll = async () => {
+        const status = await getGenerationStatus(postId);
+        setStatusText(
+          status.status === "publishing"
+            ? "Publishing to LinkedIn…"
+            : status.status === "published"
+              ? "Published!"
+              : "Processing…"
+        );
+
+        if (status.status === "published") {
+          setTimeout(() => setPhase("idle"), 2000);
+          return;
+        }
+
+        if (status.status === "failed") {
+          setErrorMessage(status.error ?? "Publishing to LinkedIn failed");
+          setPhase("error");
+          return;
+        }
+
+        setTimeout(poll, 2000);
+      };
+
+      setTimeout(poll, 1000);
+    } catch (err) {
+      setErrorMessage(
+        err instanceof Error ? err.message : "Failed to start publish"
+      );
+      setPhase("error");
+    }
+  }, [postId]);
+
   const handleReset = useCallback(() => {
     setPhase("idle");
     setPrompt("");
@@ -128,7 +171,7 @@ export default function PostGenerator() {
     setHashtags([]);
   }, []);
 
-  if (phase === "generating") {
+  if (phase === "generating" || phase === "publishing") {
     return (
       <section className="relative flex min-h-[320px] flex-col items-center justify-center gap-4 overflow-hidden rounded-[24px] border border-outline-variant/10 bg-surface-container-lowest p-md shadow-[0_4px_20px_rgba(10,102,194,0.05)]">
         <div className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-primary-container/20 blur-3xl" />
@@ -212,6 +255,7 @@ export default function PostGenerator() {
             <button
               className="flex min-h-10 items-center gap-2 rounded-xl border-2 border-primary px-6 py-2 font-label-md text-label-md font-bold text-primary transition-all hover:bg-primary-container/10"
               type="button"
+              onClick={handlePublish}
             >
               Post Immediately
             </button>
