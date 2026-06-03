@@ -86,10 +86,10 @@ export default function DashPage() {
                 <UpcomingPost day="12" status="Tomorrow, 9:00 AM" title="5 Lessons From Building My Startup" tone="active" />
                 <UpcomingPost day="14" status="Draft" title="Why AI won't replace good writing" tone="draft" />
               </div>
-              <button className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-outline-variant py-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:border-primary hover:text-primary" type="button">
+              <a href="#post-generator" className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-outline-variant py-3 font-label-md text-label-md text-on-surface-variant transition-colors hover:border-primary hover:text-primary">
                 <PlusIcon className="h-4 w-4" />
                 Schedule New Post
-              </button>
+              </a>
             </section>
           </aside>
         </div>

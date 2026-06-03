@@ -578,25 +578,25 @@ function EditModal({
 
   return (
     <Modal onClose={onClose}>
-      <h3 className="mb-4 font-headline-md text-headline-md text-on-background">
+      <h3 className="mb-4 text-xl font-bold text-on-background">
         Edit Post
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-4">
         <input
-          className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2 font-body-md text-body-md text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2.5 text-base text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
           placeholder="Title"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
         <textarea
-          className="min-h-40 w-full resize-none rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2 font-body-md text-body-md text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="min-h-40 w-full resize-none rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2.5 text-base text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
           placeholder="Post body"
           value={postBody}
           onChange={(e) => setPostBody(e.target.value)}
         />
         <input
-          className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2 font-body-md text-body-md text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2.5 text-base text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
           placeholder="Hashtags (comma-separated)"
           type="text"
           value={hashtagsStr}
@@ -605,14 +605,14 @@ function EditModal({
       </div>
       <div className="mt-4 flex justify-end gap-3">
         <button
-          className="rounded-xl border border-outline-variant px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container"
+          className="rounded-xl border border-outline-variant px-4 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container"
           type="button"
           onClick={onClose}
         >
           Cancel
         </button>
         <button
-          className="rounded-xl bg-primary px-4 py-2 font-label-md text-label-md font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-50"
+          className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-50"
           disabled={saving}
           type="button"
           onClick={handleSave}
@@ -646,12 +646,12 @@ function RescheduleModal({
 
   return (
     <Modal onClose={onClose}>
-      <h3 className="mb-4 font-headline-md text-headline-md text-on-background">
+      <h3 className="mb-4 text-xl font-bold text-on-background">
         {currentScheduledAt ? "Reschedule Post" : "Schedule Post"}
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-4">
         <input
-          className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2 font-body-md text-body-md text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
+          className="w-full rounded-xl border border-outline-variant bg-surface-container-low px-4 py-2.5 text-base text-on-surface outline-none transition-all focus:border-primary focus:ring-2 focus:ring-primary/20"
           type="datetime-local"
           value={dateStr}
           onChange={(e) => setDateStr(e.target.value)}
@@ -660,7 +660,7 @@ function RescheduleModal({
       <div className="mt-4 flex justify-end gap-3">
         {currentScheduledAt && (
           <button
-            className="rounded-xl border border-outline-variant px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container"
+            className="rounded-xl border border-outline-variant px-4 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container"
             type="button"
             onClick={() => onSave(null)}
           >
@@ -668,14 +668,14 @@ function RescheduleModal({
           </button>
         )}
         <button
-          className="rounded-xl border border-outline-variant px-4 py-2 font-label-md text-label-md text-on-surface-variant transition-colors hover:bg-surface-container"
+          className="rounded-xl border border-outline-variant px-4 py-2 text-sm font-medium text-on-surface-variant transition-colors hover:bg-surface-container"
           type="button"
           onClick={onClose}
         >
           Cancel
         </button>
         <button
-          className="rounded-xl bg-primary px-4 py-2 font-label-md text-label-md font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-50"
+          className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-on-primary transition-colors hover:bg-primary-container disabled:opacity-50"
           disabled={!dateStr}
           type="button"
           onClick={() => onSave(dateStr)}
@@ -700,7 +700,7 @@ function Modal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-2xl rounded-[24px] border border-outline-variant/10 bg-surface-container-lowest p-md shadow-[0_8px_32px_rgba(0,0,0,0.15)]"
+        className="w-full max-w-2xl rounded-[24px] border border-outline-variant/10 bg-surface-container-lowest p-6 shadow-[0_8px_32px_rgba(0,0,0,0.15)]"
         onClick={(e) => e.stopPropagation()}
       >
         {children}
