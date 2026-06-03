@@ -77,6 +77,16 @@ export async function startGeneration(
     throw new Error("You need at least 1 credit to generate content.");
   }
 
+  const postsCollection = db.collection<Post>(POSTS_COLLECTION);
+  const pendingCount = await postsCollection.countDocuments({
+    userId,
+    status: { $in: ["queued", "processing"] },
+  });
+
+  if (pendingCount > 0) {
+    throw new Error("You already have a post being generated. Wait for it to finish before starting a new one.");
+  }
+
   const now = new Date();
 
   const post: Post = {
