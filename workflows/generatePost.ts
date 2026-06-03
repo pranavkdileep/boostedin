@@ -3,8 +3,10 @@ import { FatalError } from "workflow";
 import { generatePost as generatePostLLM } from "@/actions/llm/generatePost";
 import { db } from "@/lib/db/db";
 import type { Post } from "@/lib/types/post";
+import type { User } from "@/lib/types/user";
 
 const POSTS_COLLECTION = "posts";
+const USERS_COLLECTION = "users";
 
 export async function generatePostWorkflow(postData: Post) {
   "use workflow";
@@ -95,6 +97,7 @@ async function savePostError(
       },
     }
   );
+
 }
 
 async function savePostResult(postId: string, result: LLMResult): Promise<void> {
@@ -137,6 +140,19 @@ async function savePostResult(postId: string, result: LLMResult): Promise<void> 
           changedAt: now,
         },
       },
+    }
+  );
+
+  const usersCollection = db.collection<User>(USERS_COLLECTION);
+  await usersCollection.updateOne(
+    { _id: post.userId },
+    {
+      $inc: {
+        credits: -1,
+        postsGenerated: 1,
+        totalCreditsUsed: 1,
+      },
+      $set: { updatedAt: now },
     }
   );
 }

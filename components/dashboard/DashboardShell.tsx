@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -39,10 +40,12 @@ const footerItems = [
 
 type DashboardShellProps = {
   title: string;
+  userName?: string;
+  userAvatar?: string;
   children?: React.ReactNode;
 };
 
-export default function DashboardShell({ title, children }: DashboardShellProps) {
+export default function DashboardShell({ title, userName, userAvatar, children }: DashboardShellProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -50,7 +53,7 @@ export default function DashboardShell({ title, children }: DashboardShellProps)
       <DashboardSidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
 
       <div className="min-h-screen md:ml-64">
-        <DashboardHeader title={title} onOpenSidebar={() => setMobileOpen(true)} />
+        <DashboardHeader title={title} userName={userName} userAvatar={userAvatar} onOpenSidebar={() => setMobileOpen(true)} />
         <main className="mx-auto min-h-[calc(100vh-4rem)] max-w-[1440px] p-sm md:p-lg">
           {children}
         </main>
@@ -186,11 +189,17 @@ function SidebarLink({
 
 function DashboardHeader({
   title,
+  userName,
+  userAvatar,
   onOpenSidebar,
 }: {
   title: string;
+  userName?: string;
+  userAvatar?: string;
   onOpenSidebar: () => void;
 }) {
+  const userInitial = userName?.trim().charAt(0).toUpperCase() || "U";
+
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-outline-variant/10 bg-surface/80 px-sm backdrop-blur-xl md:px-lg">
       <div className="flex min-w-0 flex-1 items-center gap-3 md:gap-4">
@@ -226,7 +235,18 @@ function DashboardHeader({
         <HeaderIconButton ariaLabel="Notifications" icon={BellIcon} />
         <HeaderIconButton ariaLabel="Help" icon={HelpCircleIcon} />
         <div className="ml-1 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-outline-variant/20 bg-primary-container text-sm font-bold text-on-primary shadow-card">
-          P
+          {userAvatar ? (
+            <Image
+              alt={userName ? `${userName} profile` : "User profile"}
+              className="h-full w-full object-cover"
+              height={36}
+              src={userAvatar}
+              unoptimized
+              width={36}
+            />
+          ) : (
+            userInitial
+          )}
         </div>
       </div>
     </header>

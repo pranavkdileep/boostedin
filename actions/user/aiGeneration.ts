@@ -6,11 +6,18 @@ import { randomBytes } from "crypto";
 import { verifyUser } from "@/actions/auth/login";
 import { db } from "@/lib/db/db";
 import type { Post, PostHistoryEntry, PostStatus } from "@/lib/types/post";
+import type { User } from "@/lib/types/user";
 
 const SESSION_COOKIE = "session";
 const POSTS_COLLECTION = "posts";
+const USERS_COLLECTION = "users";
 
 async function getAuthenticatedUserId(): Promise<string> {
+  const user = await getAuthenticatedUser();
+  return user._id;
+}
+
+async function getAuthenticatedUser(): Promise<User> {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get(SESSION_COOKIE)?.value;
 
@@ -23,7 +30,19 @@ async function getAuthenticatedUserId(): Promise<string> {
     throw new Error("Not authenticated");
   }
 
-  return user._id;
+  return user;
+}
+
+function hasValidPostingToken(user: User): boolean {
+  if (!user.linkedinPostingEnabled || !user.linkedin.postingAccessToken) {
+    return false;
+  }
+
+  if (!user.linkedin.postingTokenExpiresAt) {
+    return true;
+  }
+
+  return new Date(user.linkedin.postingTokenExpiresAt).getTime() > Date.now();
 }
 
 export interface StartGenerationInput {
@@ -36,7 +55,28 @@ export interface StartGenerationInput {
 export async function startGeneration(
   input: StartGenerationInput
 ): Promise<{ postId: string }> {
-  const userId = await getAuthenticatedUserId();
+  const user = await getAuthenticatedUser();
+  const userId = user._id;
+
+  if (!hasValidPostingToken(user)) {
+    const usersCollection = db.collection<User>(USERS_COLLECTION);
+    await usersCollection.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          linkedinPostingEnabled: false,
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    throw new Error("Connect LinkedIn posting access before generating content.");
+  }
+
+  if (user.credits < 1) {
+    throw new Error("You need at least 1 credit to generate content.");
+  }
+
   const now = new Date();
 
   const post: Post = {
