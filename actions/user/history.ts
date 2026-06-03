@@ -250,7 +250,7 @@ export async function republishHistoryPost(
     throw new Error("Post not found");
   }
 
-  const allowedStatuses: PostStatus[] = ["draft", "published", "failed"];
+  const allowedStatuses: PostStatus[] = ["draft", "scheduled", "published", "failed"];
   if (!allowedStatuses.includes(post.status)) {
     throw new Error(
       `Cannot republish a post with status "${post.status}". Only draft, published, or failed posts can be republished.`
@@ -293,6 +293,7 @@ export async function rescheduleHistoryPost(
         $set: {
           isScheduled: true,
           scheduledAt: date,
+          status: "scheduled",
           updatedAt: new Date(),
         },
       }
@@ -304,6 +305,7 @@ export async function rescheduleHistoryPost(
         $set: {
           isScheduled: false,
           scheduledAt: undefined,
+          status: "draft",
           updatedAt: new Date(),
         },
       }
