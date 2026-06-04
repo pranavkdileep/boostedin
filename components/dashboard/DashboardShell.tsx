@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { logout } from "@/actions/auth/login";
+import NotificationsDropdown from "@/components/dashboard/NotificationsDropdown";
 
 const navItems = [
   {
@@ -232,7 +233,7 @@ function DashboardHeader({
       </div>
 
       <div className="ml-3 flex items-center gap-2 sm:gap-4">
-        <HeaderIconButton ariaLabel="Notifications" icon={BellIcon} />
+        <NotificationsDropdown />
         <HeaderIconButton ariaLabel="Help" icon={HelpCircleIcon} />
         <div className="ml-1 flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-outline-variant/20 bg-primary-container text-sm font-bold text-on-primary shadow-card">
           {userAvatar ? (
@@ -382,15 +383,6 @@ function SearchIcon(props: IconProps) {
     <BaseIcon {...props}>
       <path d="m21 21-4.35-4.35" />
       <path d="M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15Z" />
-    </BaseIcon>
-  );
-}
-
-function BellIcon(props: IconProps) {
-  return (
-    <BaseIcon {...props}>
-      <path d="M14.25 18.75a2.25 2.25 0 0 1-4.5 0" />
-      <path d="M18.38 14.63 17.25 13.5v-3.75a5.25 5.25 0 1 0-10.5 0v3.75l-1.13 1.13A1.5 1.5 0 0 0 6.68 17.25h10.64a1.5 1.5 0 0 0 1.06-2.62Z" />
     </BaseIcon>
   );
 }

@@ -1,12 +1,15 @@
 import { FatalError } from "workflow";
+import { randomBytes } from "crypto";
 
 import { generatePost as generatePostLLM } from "@/actions/llm/generatePost";
 import { db } from "@/lib/db/db";
 import type { Post } from "@/lib/types/post";
 import type { User } from "@/lib/types/user";
+import type { Notification } from "@/lib/types/notification";
 
 const POSTS_COLLECTION = "posts";
 const USERS_COLLECTION = "users";
+const NOTIFICATIONS_COLLECTION = "notifications";
 
 export async function generatePostWorkflow(postData: Post) {
   "use workflow";
@@ -20,6 +23,7 @@ export async function generatePostWorkflow(postData: Post) {
   } catch (err) {
     await savePostError(
       postId,
+      postData.userId,
       err instanceof Error ? err.message : "Generation failed"
     );
   }
@@ -80,6 +84,7 @@ async function callLLMGenerate(post: Post): Promise<LLMResult> {
 
 async function savePostError(
   postId: string,
+  userId: string,
   error: string
 ): Promise<void> {
   "use step";
@@ -98,6 +103,19 @@ async function savePostError(
     }
   );
 
+  const notificationsCollection =
+    db.collection<Notification>(NOTIFICATIONS_COLLECTION);
+  await notificationsCollection.insertOne({
+    _id: randomBytes(16).toString("hex"),
+    userId,
+    type: "generation_failure",
+    title: "Post generation failed",
+    message: error.length > 120 ? error.slice(0, 120) + "…" : error,
+    href: "/dash/history",
+    postId,
+    status: "active",
+    createdAt: now,
+  } as unknown as Notification);
 }
 
 async function savePostResult(postId: string, result: LLMResult): Promise<void> {
@@ -155,4 +173,18 @@ async function savePostResult(postId: string, result: LLMResult): Promise<void> 
       $set: { updatedAt: now },
     }
   );
+
+  const notificationsCollection =
+    db.collection<Notification>(NOTIFICATIONS_COLLECTION);
+  await notificationsCollection.insertOne({
+    _id: randomBytes(16).toString("hex"),
+    userId: post.userId,
+    type: "generation_success",
+    title: "Draft ready",
+    message: `"${result.title || "Untitled post"}" has been generated as a draft.`,
+    href: "/dash/history",
+    postId,
+    status: "active",
+    createdAt: now,
+  } as unknown as Notification);
 }

@@ -1,13 +1,16 @@
 import { FatalError, fetch } from "workflow";
+import { randomBytes } from "crypto";
 
 import { decrypt } from "@/actions/security/aes";
 import { publishToLinkedin } from "@/actions/linkedin/post";
 import { db } from "@/lib/db/db";
 import type { Post } from "@/lib/types/post";
 import type { User } from "@/lib/types/user";
+import type { Notification } from "@/lib/types/notification";
 
 const USERS_COLLECTION = "users";
 const POSTS_COLLECTION = "posts";
+const NOTIFICATIONS_COLLECTION = "notifications";
 
 export async function publishPostWorkflow(postId: string) {
   "use workflow";
@@ -114,6 +117,9 @@ async function savePublishError(
   const postsCollection = db.collection<Post>(POSTS_COLLECTION);
   const now = new Date();
 
+  const post = await postsCollection.findOne({ _id: postId });
+  const userId = post?.userId;
+
   await postsCollection.updateOne(
     { _id: postId },
     {
@@ -124,6 +130,22 @@ async function savePublishError(
       },
     }
   );
+
+  if (userId) {
+    const notificationsCollection =
+      db.collection<Notification>(NOTIFICATIONS_COLLECTION);
+    await notificationsCollection.insertOne({
+      _id: randomBytes(16).toString("hex"),
+      userId,
+      type: "publish_failure",
+      title: "Post publish failed",
+      message: error.length > 120 ? error.slice(0, 120) + "…" : error,
+      href: "/dash/history",
+      postId,
+      status: "active",
+      createdAt: now,
+    } as unknown as Notification);
+  }
 }
 
 async function savePublishResult(
@@ -134,6 +156,9 @@ async function savePublishResult(
 
   const postsCollection = db.collection<Post>(POSTS_COLLECTION);
   const now = new Date();
+
+  const post = await postsCollection.findOne({ _id: postId });
+  const postTitle = post?.title || "Untitled post";
 
   await postsCollection.updateOne(
     { _id: postId },
@@ -147,4 +172,20 @@ async function savePublishResult(
       },
     }
   );
+
+  if (post?.userId) {
+    const notificationsCollection =
+      db.collection<Notification>(NOTIFICATIONS_COLLECTION);
+    await notificationsCollection.insertOne({
+      _id: randomBytes(16).toString("hex"),
+      userId: post.userId,
+      type: "publish_success",
+      title: "Post published on LinkedIn",
+      message: `"${postTitle}" has been published successfully.`,
+      href: "/dash/history",
+      postId,
+      status: "active",
+      createdAt: now,
+    } as unknown as Notification);
+  }
 }

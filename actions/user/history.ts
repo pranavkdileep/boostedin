@@ -6,9 +6,11 @@ import { randomBytes } from "crypto";
 import { verifyUser } from "@/actions/auth/login";
 import { db } from "@/lib/db/db";
 import type { Post, PostHistoryEntry, PostStatus } from "@/lib/types/post";
+import type { Notification } from "@/lib/types/notification";
 
 const SESSION_COOKIE = "session";
 const POSTS_COLLECTION = "posts";
+const NOTIFICATIONS_COLLECTION = "notifications";
 
 async function getAuthenticatedUserId(): Promise<string> {
   const cookieStore = await cookies();
@@ -278,6 +280,8 @@ export async function rescheduleHistoryPost(
     throw new Error("Post not found");
   }
 
+  const now = new Date();
+
   if (scheduledAt) {
     const date = new Date(scheduledAt);
     if (isNaN(date.getTime())) {
@@ -294,10 +298,24 @@ export async function rescheduleHistoryPost(
           isScheduled: true,
           scheduledAt: date,
           status: "scheduled",
-          updatedAt: new Date(),
+          updatedAt: now,
         },
       }
     );
+
+    const notificationsCollection =
+      db.collection<Notification>(NOTIFICATIONS_COLLECTION);
+    await notificationsCollection.insertOne({
+      _id: randomBytes(16).toString("hex"),
+      userId,
+      type: "post_scheduled",
+      title: "Post scheduled",
+      message: `"${post.title || "Untitled post"}" will be published on ${date.toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })}.`,
+      href: "/dash/calendar",
+      postId,
+      status: "active",
+      createdAt: now,
+    } as unknown as Notification);
   } else {
     await postsCollection.updateOne(
       { _id: postId, userId },
@@ -306,9 +324,23 @@ export async function rescheduleHistoryPost(
           isScheduled: false,
           scheduledAt: undefined,
           status: "draft",
-          updatedAt: new Date(),
+          updatedAt: now,
         },
       }
     );
+
+    const notificationsCollection =
+      db.collection<Notification>(NOTIFICATIONS_COLLECTION);
+    await notificationsCollection.insertOne({
+      _id: randomBytes(16).toString("hex"),
+      userId,
+      type: "post_unscheduled",
+      title: "Post moved to draft",
+      message: `"${post.title || "Untitled post"}" was unscheduled and moved back to drafts.`,
+      href: "/dash/history",
+      postId,
+      status: "active",
+      createdAt: now,
+    } as unknown as Notification);
   }
 }
