@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { adminLogin } from "@/actions/admin/auth";
 
-export default function AdminLoginPage() {
+function LoginForm() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
   const [pending, setPending] = useState(false);
@@ -163,5 +163,13 @@ export default function AdminLoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AdminLoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }
