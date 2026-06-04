@@ -4,7 +4,7 @@ services:
     container_name: boostedin-mongodb
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "${MONGODB_HOST_PORT:-27017}:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
@@ -24,7 +24,7 @@ services:
     container_name: boostedin-mongo-express
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "${MONGO_EXPRESS_HOST_PORT:-8081}:8081"
     environment:
       ME_CONFIG_MONGODB_URL: ${MONGODB_DOCKER_URI}
       ME_CONFIG_BASICAUTH_USERNAME: admin
@@ -40,7 +40,7 @@ services:
     container_name: boostedin-nextapp
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "${NEXTAPP_HOST_PORT:-3000}:3000"
     env_file:
       - .env
     environment:
