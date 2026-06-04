@@ -33,6 +33,22 @@ services:
       mongodb:
         condition: service_healthy
 
+  nextapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: boostedin-nextapp
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env.local
+    environment:
+      MONGODB_URI: ${MONGODB_DOCKER_URI}
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
 volumes:
   mongodb_data:
     driver: local
