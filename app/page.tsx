@@ -1,5 +1,30 @@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Link from "next/link";
+
+const featureCards = [
+  {
+    title: "AI post writing",
+    description:
+      "Turn rough ideas into polished LinkedIn posts that sound like you, not a template.",
+  },
+  {
+    title: "Smart scheduling",
+    description:
+      "Plan content ahead of time and publish consistently without manual follow-up.",
+  },
+  {
+    title: "Growth analytics",
+    description:
+      "Track what performs best so you can double down on the content that gets results.",
+  },
+];
+
+const pricingHighlights = [
+  "1 credit = 1 rupee",
+  "1 post consumes 1 credit",
+  "You get 10 credits every month free",
+];
 
 export default function Home() {
   return (
@@ -104,6 +129,18 @@ export default function Home() {
                 </svg>
                 Watch Demo
               </button>
+              <Link
+                href="#features"
+                className="font-label-md text-label-md text-primary hover:text-primary-fixed transition-colors"
+              >
+                Explore Features
+              </Link>
+              <Link
+                href="#pricing"
+                className="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors"
+              >
+                See Pricing
+              </Link>
               <div className="flex -space-x-2">
                 <div className="w-8 h-8 rounded-full border-2 border-surface-container-lowest bg-primary-container overflow-hidden">
                   <div className="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600" />
@@ -284,6 +321,122 @@ export default function Home() {
                 +89% Engagement
               </span>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="features"
+        className="px-margin-mobile md:px-margin-desktop pb-20"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col gap-4 mb-10">
+            <span className="font-label-md text-label-md text-primary">
+              Features
+            </span>
+            <h2 className="font-display-md-mobile md:font-display-md text-display-md-mobile md:text-display-md text-on-background">
+              Everything you need to post consistently
+            </h2>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+              Boostedin helps you create, schedule, and improve LinkedIn
+              content without spending all day inside the editor.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {featureCards.map((card) => (
+              <article
+                key={card.title}
+                className="rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-6 shadow-card"
+              >
+                <div className="mb-4 h-12 w-12 rounded-xl bg-primary-container flex items-center justify-center">
+                  <div className="h-3 w-3 rounded-full bg-secondary" />
+                </div>
+                <h3 className="font-headline-md text-headline-md text-on-surface mb-3">
+                  {card.title}
+                </h3>
+                <p className="font-body-md text-body-md text-on-surface-variant">
+                  {card.description}
+                </p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section
+        id="pricing"
+        className="px-margin-mobile md:px-margin-desktop pb-20"
+      >
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col gap-4 mb-10">
+            <span className="font-label-md text-label-md text-primary">
+              Pricing
+            </span>
+            <h2 className="font-display-md-mobile md:font-display-md text-display-md-mobile md:text-display-md text-on-background">
+              Simple pricing that stays easy to understand
+            </h2>
+            <p className="font-body-lg text-body-lg text-on-surface-variant max-w-3xl">
+              No complicated bundles. You only pay for what you use, and every
+              account starts with a monthly free allowance.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1.15fr_0.85fr] gap-6 items-stretch">
+            <article className="w-full rounded-3xl border border-outline-variant/70 bg-surface-container-lowest p-8 shadow-card">
+              <div className="flex w-full flex-col gap-3">
+                <span className="font-label-md text-label-md text-primary">
+                  Pay as you go
+                </span>
+                <div className="flex items-end gap-3">
+                  <span className="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-background">
+                    1 credit
+                  </span>
+                  <span className="pb-1 font-body-lg text-body-lg text-on-surface-variant">
+                    = 1 rupee
+                  </span>
+                </div>
+                <p className="w-full max-w-none whitespace-normal break-normal font-body-md leading-relaxed text-body-md text-on-surface-variant">
+                  Every post consumes 1 credit, so the cost stays predictable as
+                  you create and publish content.
+                </p>
+              </div>
+
+              <div className="mt-8 grid gap-3">
+                {pricingHighlights.map((item) => (
+                  <div
+                    key={item}
+                    className="flex items-center gap-3 rounded-2xl bg-surface-container-low px-4 py-3"
+                  >
+                    <span className="h-2.5 w-2.5 rounded-full bg-secondary" />
+                    <span className="font-body-md text-body-md text-on-surface">
+                      {item}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </article>
+
+            <aside className="rounded-3xl border border-primary/20 bg-purple-gradient p-8 text-on-primary shadow-[0_18px_48px_rgba(124,58,237,0.25)]">
+              <span className="font-label-md text-label-md text-on-primary/90">
+                Included every month
+              </span>
+              <h3 className="mt-3 font-headline-lg text-headline-lg">
+                10 free credits
+              </h3>
+              <p className="mt-4 font-body-lg text-body-lg text-on-primary/90">
+                You get 10 credits every month free, so you can keep posting
+                even before you top up.
+              </p>
+              <div className="mt-8 rounded-2xl bg-white/10 p-4 backdrop-blur">
+                <p className="font-label-sm text-label-sm text-on-primary/80 uppercase tracking-[0.18em]">
+                  Example
+                </p>
+                <p className="mt-2 font-body-md text-body-md text-on-primary/95">
+                  10 free credits = 10 posts each month at no charge.
+                </p>
+              </div>
+            </aside>
           </div>
         </div>
       </section>

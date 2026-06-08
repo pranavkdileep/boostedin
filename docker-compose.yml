@@ -33,21 +33,21 @@ services:
       mongodb:
         condition: service_healthy
 
-  nextapp:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: boostedin-nextapp
-    restart: unless-stopped
-    ports:
-      - "${NEXTAPP_HOST_PORT:-3000}:3000"
-    env_file:
-      - .env
-    environment:
-      MONGODB_URI: ${MONGODB_DOCKER_URI}
-    depends_on:
-      mongodb:
-        condition: service_healthy
+  # nextapp:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: boostedin-nextapp
+  #   restart: unless-stopped
+  #   ports:
+  #     - "${NEXTAPP_HOST_PORT:-3000}:3000"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     MONGODB_URI: ${MONGODB_DOCKER_URI}
+  #   depends_on:
+  #     mongodb:
+  #       condition: service_healthy
 
 volumes:
   mongodb_data:
