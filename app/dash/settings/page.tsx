@@ -2,7 +2,11 @@ import DashboardShell from "@/components/dashboard/DashboardShell";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 
-import { updateUserSettings, getUserSettings } from "@/actions/user/settings";
+import {
+  updateUserSettings,
+  getUserSettings,
+  syncLinkedInPostingAccessState,
+} from "@/actions/user/settings";
 import { allowLinkedInPostingAccess } from "@/actions/user/linkedinPosting";
 
 type SettingsPageProps = {
@@ -15,6 +19,7 @@ type SettingsPageProps = {
 
 export default async function SettingsPage({ searchParams }: SettingsPageProps) {
   const statusParams = await searchParams;
+  await syncLinkedInPostingAccessState();
   const settings = await getUserSettings();
 
   if (!settings) {
