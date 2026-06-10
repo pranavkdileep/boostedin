@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { handleLinkedInCallback } from "@/actions/auth/login";
+import { getPublicOrigin } from "@/lib/http/publicOrigin";
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
+  const publicOrigin = getPublicOrigin(request.headers);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
   const error = searchParams.get("error");
@@ -15,13 +17,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           `/dash/settings?linkedin=error&message=${encodeURIComponent(error)}`,
-          request.url
+          publicOrigin
         )
       );
     }
 
     return NextResponse.redirect(
-      new URL(`/auth?error=${encodeURIComponent(error)}`, request.url)
+      new URL(`/auth?error=${encodeURIComponent(error)}`, publicOrigin)
     );
   }
 
@@ -30,13 +32,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           "/dash/settings?linkedin=error&message=missing_params",
-          request.url
+          publicOrigin
         )
       );
     }
 
     return NextResponse.redirect(
-      new URL("/auth?error=missing_params", request.url)
+      new URL("/auth?error=missing_params", publicOrigin)
     );
   }
 
@@ -53,13 +55,13 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           `/dash/settings?linkedin=error&message=${encodeURIComponent(message)}`,
-          request.url
+          publicOrigin
         )
       );
     }
 
     return NextResponse.redirect(
-      new URL(`/auth?error=${encodeURIComponent(message)}`, request.url)
+      new URL(`/auth?error=${encodeURIComponent(message)}`, publicOrigin)
     );
   }
 
@@ -68,15 +70,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(
         new URL(
           "/dash/settings?linkedin=error&message=LinkedIn%20posting%20access%20was%20not%20enabled",
-          request.url
+          publicOrigin
         )
       );
     }
 
     return NextResponse.redirect(
-      new URL("/dash/settings?linkedin=success", request.url)
+      new URL("/dash/settings?linkedin=success", publicOrigin)
     );
   }
 
-  return NextResponse.redirect(new URL(redirectPath, request.url));
+  return NextResponse.redirect(new URL(redirectPath, publicOrigin));
 }

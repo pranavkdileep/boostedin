@@ -5,6 +5,7 @@ import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { verifyUser } from "@/actions/auth/login";
+import { getPublicOrigin } from "@/lib/http/publicOrigin";
 
 const LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization";
 const LINKEDIN_POSTING_SCOPES = "openid profile email w_member_social";
@@ -24,11 +25,7 @@ function getLinkedInClientId(): string {
 
 async function getBaseUrl(): Promise<string> {
   const headerList = await headers();
-  const host = process.env.DEFAULT_HOST!;
-  const forwardedProto = headerList.get("x-forwarded-proto");
-  const protocol =
-    forwardedProto ?? (host.includes("localhost") ? "http" : "https");
-  return `${protocol}://${host}`;
+  return getPublicOrigin(headerList);
 }
 
 export async function allowLinkedInPostingAccess() {

@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 
 import { db } from "@/lib/db/db";
 import { encrypt } from "@/actions/security/aes";
+import { getPublicOrigin } from "@/lib/http/publicOrigin";
 import type { User } from "@/lib/types/user";
 
 const LINKEDIN_AUTH_URL = "https://www.linkedin.com/oauth/v2/authorization";
@@ -43,11 +44,7 @@ function getLinkedInCredentials(): { clientId: string; clientSecret: string } {
 
 async function getBaseUrl(): Promise<string> {
   const headerList = await headers();
-  const host = process.env.DEFAULT_HOST!;
-  const forwardedProto = headerList.get("x-forwarded-proto");
-  const protocol =
-    forwardedProto ?? (host.includes("localhost") ? "http" : "https");
-  return `${protocol}://${host}`;
+  return getPublicOrigin(headerList);
 }
 
 export async function signInWithLinkedIn() {
