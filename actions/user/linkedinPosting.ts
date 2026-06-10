@@ -24,7 +24,7 @@ function getLinkedInClientId(): string {
 
 async function getBaseUrl(): Promise<string> {
   const headerList = await headers();
-  const host = headerList.get("host") ?? process.env.DEFAULT_HOST!;
+  const host = process.env.DEFAULT_HOST!;
   const forwardedProto = headerList.get("x-forwarded-proto");
   const protocol =
     forwardedProto ?? (host.includes("localhost") ? "http" : "https");
