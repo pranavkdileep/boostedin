@@ -13,6 +13,7 @@ const LINKEDIN_INTROSPECT_URL =
   "https://www.linkedin.com/oauth/v2/introspectToken";
 const USERS_COLLECTION = "users";
 const MAX_BIO_LENGTH = 500;
+const POSTING_ACCESS_SYNC_GRACE_PERIOD_MS = 2 * 60 * 1000;
 
 export interface UserSettings {
   profilePictureUrl: string | undefined;
@@ -175,6 +176,10 @@ async function inspectLinkedInPostingToken(
   }
 }
 
+function wasRecentlyUpdated(updatedAt: Date): boolean {
+  return Date.now() - new Date(updatedAt).getTime() < POSTING_ACCESS_SYNC_GRACE_PERIOD_MS;
+}
+
 export async function syncLinkedInPostingAccessState(): Promise<void> {
   const cookieStore = await cookies();
   const sessionToken = cookieStore.get(SESSION_COOKIE)?.value;
@@ -198,7 +203,13 @@ export async function syncLinkedInPostingAccessState(): Promise<void> {
     return;
   }
 
+  const recentlyUpdated = wasRecentlyUpdated(currentUser.updatedAt);
+
   if (!currentUser.linkedin.postingAccessToken) {
+    if (recentlyUpdated) {
+      return;
+    }
+
     await clearLinkedInPostingAccess(currentUser._id);
     return;
   }
@@ -208,6 +219,10 @@ export async function syncLinkedInPostingAccessState(): Promise<void> {
   );
 
   if (inspection.isValid === false) {
+    if (recentlyUpdated) {
+      return;
+    }
+
     await clearLinkedInPostingAccess(currentUser._id);
     return;
   }
@@ -221,6 +236,10 @@ export async function syncLinkedInPostingAccessState(): Promise<void> {
     currentUser.linkedin.postingTokenExpiresAt &&
     new Date(currentUser.linkedin.postingTokenExpiresAt).getTime() <= Date.now()
   ) {
+    if (recentlyUpdated) {
+      return;
+    }
+
     await clearLinkedInPostingAccess(currentUser._id);
   }
 }
