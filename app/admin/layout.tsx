@@ -9,6 +9,7 @@ const navItems = [
   { label: "Support Tickets", href: "/admin/support-tickets", icon: TicketIcon },
   { label: "Users", href: "/admin/users", icon: UsersIcon },
   { label: "Posts", href: "/admin/posts", icon: PostsIcon },
+  { label: "Billing", href: "/admin/billing", icon: BillingIcon },
 ];
 
 export default function AdminLayout({
@@ -172,6 +173,16 @@ function ShieldIcon(props: IconProps) {
   return (
     <BaseIcon {...props}>
       <path d="M12 3s-6 3-6 9v3.75a2.25 2.25 0 0 0 1.125 1.948L12 21l4.875-2.302A2.25 2.25 0 0 0 18 15.75V12c0-6-6-9-6-9Z" />
+    </BaseIcon>
+  );
+}
+
+function BillingIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M5 7.5h14M5 7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5M5 7.5v9A2.5 2.5 0 0 0 7.5 19h9a2.5 2.5 0 0 0 2.5-2.5v-9" />
+      <path d="M12 10.5v6" />
+      <path d="M9 13.5h6" />
     </BaseIcon>
   );
 }
