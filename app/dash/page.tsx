@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { getDashboardData, type UpcomingPostItem } from "@/actions/user/dashboard";
+import BuyCreditsButton from "@/components/dashboard/BuyCreditsButton";
 import DashboardShell from "@/components/dashboard/DashboardShell";
 import PostGenerator from "@/components/dashboard/PostGenerator";
 
@@ -82,10 +83,10 @@ export default async function DashPage() {
                   style={{ width: `${creditUsedPercent}%` }}
                 />
               </div>
-              <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-surface-container py-2 font-label-md text-label-md text-primary transition-colors hover:bg-surface-container-highest" type="button">
+              <BuyCreditsButton className="flex w-full items-center justify-center gap-2 rounded-lg bg-surface-container py-2 font-label-md text-label-md text-primary transition-colors hover:bg-surface-container-highest">
                 <PlusIcon className="h-4 w-4" />
                 Buy More Credits
-              </button>
+              </BuyCreditsButton>
             </section>
 
             <section className="rounded-[24px] border border-outline-variant/10 bg-surface-container-lowest p-md shadow-[0_4px_20px_rgba(10,102,194,0.05)]">

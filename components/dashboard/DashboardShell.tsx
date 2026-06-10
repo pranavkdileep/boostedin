@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 
 import { logout } from "@/actions/auth/login";
+import BuyCreditsButton from "@/components/dashboard/BuyCreditsButton";
 import NotificationsDropdown from "@/components/dashboard/NotificationsDropdown";
 
 const navItems = [
@@ -129,10 +130,10 @@ function SidebarContent({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       <div className="mt-auto space-y-4">
-        <button className="bg-purple-gradient flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-label-md text-label-md text-white shadow-[0_10px_24px_rgba(113,42,226,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(113,42,226,0.28)] active:translate-y-0" type="button">
+        <BuyCreditsButton className="bg-purple-gradient flex w-full items-center justify-center gap-2 rounded-lg px-4 py-2.5 font-label-md text-label-md text-white shadow-[0_10px_24px_rgba(113,42,226,0.18)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_14px_30px_rgba(113,42,226,0.28)] active:translate-y-0">
           <PremiumIcon className="h-4 w-4" />
           Buy More Credits
-        </button>
+        </BuyCreditsButton>
 
         <div className="space-y-1 border-t border-outline-variant/20 pt-4">
           {footerItems.map((item) => (
