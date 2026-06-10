@@ -26,6 +26,11 @@ const navItems = [
     icon: CalendarIcon,
   },
   {
+    label: "Billing",
+    href: "/dash/billing",
+    icon: BillingIcon,
+  },
+  {
     label: "Settings",
     href: "/dash/settings",
     icon: SettingsIcon,
@@ -359,6 +364,16 @@ function LogoutIcon(props: IconProps) {
     <BaseIcon {...props}>
       <path d="M15.75 9V5.25A2.25 2.25 0 0 0 13.5 3h-6A2.25 2.25 0 0 0 5.25 5.25v13.5A2.25 2.25 0 0 0 7.5 21h6a2.25 2.25 0 0 0 2.25-2.25V15" />
       <path d="M12 12h9m0 0-3-3m3 3-3 3" />
+    </BaseIcon>
+  );
+}
+
+function BillingIcon(props: IconProps) {
+  return (
+    <BaseIcon {...props}>
+      <path d="M5 7.5h14M5 7.5A2.5 2.5 0 0 1 7.5 5h9A2.5 2.5 0 0 1 19 7.5M5 7.5v9A2.5 2.5 0 0 0 7.5 19h9a2.5 2.5 0 0 0 2.5-2.5v-9" />
+      <path d="M12 10.5v6" />
+      <path d="M9 13.5h6" />
     </BaseIcon>
   );
 }

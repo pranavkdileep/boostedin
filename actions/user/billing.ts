@@ -313,6 +313,50 @@ export async function verifyBillingPayment(orderId: string): Promise<Billing> {
   return creditBillingOrder(orderId);
 }
 
+export interface BillingHistoryItem {
+  billingId: string;
+  orderId: string;
+  amountPaid: number;
+  amountCredited: number;
+  time: string;
+  status: BillingStatus;
+}
+
+export interface BillingHistoryResult {
+  items: BillingHistoryItem[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
+export async function getBillingHistory(
+  page = 1,
+  pageSize = 10
+): Promise<BillingHistoryResult> {
+  const user = await getAuthenticatedUser();
+  const adjustedPage = Math.max(1, page);
+  const adjustedPageSize = Math.min(50, Math.max(1, pageSize));
+
+  const billingsCollection = db.collection<Billing>(BILLINGS_COLLECTION);
+  const query = { userId: user._id };
+  const total = await billingsCollection.countDocuments(query);
+  const totalPages = Math.ceil(total / adjustedPageSize);
+  const skip = (adjustedPage - 1) * adjustedPageSize;
+
+  const items = await billingsCollection
+    .find(query, { sort: { _id: -1 }, skip, limit: adjustedPageSize })
+    .toArray();
+
+  return {
+    items: (items as unknown as Billing[]).map(toClientBilling),
+    total,
+    page: adjustedPage,
+    pageSize: adjustedPageSize,
+    totalPages,
+  };
+}
+
 export async function processUpiPaymentSuccessWebhook(
   orderId: string,
   amountPaid: number
